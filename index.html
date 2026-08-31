@@ -1,0 +1,2810 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Orlando WaitWatch</title>
+
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#050b14;
+  color:#f5f7fb;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* HEADER */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:5000;
+  background:rgba(5,11,20,.97);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid #20334b;
+}
+
+.nav{
+  max-width:1500px;
+  margin:auto;
+  padding:14px 25px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:23px;
+  font-weight:900;
+}
+
+.logo span{
+  color:#36ddff;
+}
+
+.nav-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.nav-button{
+  background:#101d30;
+  border:1px solid #293f5b;
+  color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+.nav-button:hover{
+  border-color:#36ddff;
+}
+
+.refresh{
+  background:linear-gradient(135deg,#2bdfff,#705cff);
+  border:0;
+}
+
+/* MAIN */
+
+.container{
+  max-width:1500px;
+  margin:auto;
+  padding:0 25px 70px;
+}
+
+.hero{
+  padding:70px 0 35px;
+}
+
+.hero h1{
+  font-size:clamp(45px,7vw,85px);
+  line-height:.94;
+  letter-spacing:-5px;
+  margin:0;
+}
+
+.hero h1 span{
+  color:#36ddff;
+}
+
+.hero p{
+  max-width:900px;
+  color:#91a5bd;
+  font-size:18px;
+  line-height:1.7;
+}
+
+/* STATUS */
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:15px;
+  background:#0c1727;
+  border:1px solid #20334b;
+  border-radius:16px;
+  padding:16px 18px;
+  margin-bottom:15px;
+}
+
+.status-left{
+  display:flex;
+  align-items:center;
+}
+
+.status-dot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  margin-right:9px;
+  background:#ff6378;
+}
+
+.status-dot.live{
+  background:#35e58b;
+  box-shadow:0 0 14px #35e58b;
+}
+
+.status-dot.loading{
+  background:#ffd166;
+}
+
+.small{
+  font-size:12px;
+  color:#8195ad;
+}
+
+/* NOTICE */
+
+.notice{
+  display:none;
+  background:#241c0b;
+  border:1px solid #66521b;
+  color:#ffd166;
+  border-radius:14px;
+  padding:17px;
+  line-height:1.7;
+  margin-bottom:15px;
+}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.stat{
+  background:#0c1727;
+  border:1px solid #20334b;
+  border-radius:16px;
+  padding:18px;
+}
+
+.stat-label{
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-weight:900;
+  color:#8195ad;
+}
+
+.stat-number{
+  font-size:30px;
+  font-weight:900;
+  margin-top:7px;
+}
+
+/* CONTROLS */
+
+.controls{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  background:#0c1727;
+  border:1px solid #20334b;
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:40px;
+}
+
+.controls input,
+.controls select{
+  background:#111f32;
+  border:1px solid #293e59;
+  color:white;
+  border-radius:10px;
+  padding:11px;
+}
+
+.controls input{
+  flex:1;
+  min-width:230px;
+}
+
+.controls button{
+  background:#14243a;
+  border:1px solid #293e59;
+  color:white;
+  border-radius:10px;
+  padding:11px 14px;
+  font-weight:800;
+}
+
+.controls button:hover{
+  border-color:#36ddff;
+}
+
+/* SECTIONS */
+
+.section{
+  margin:50px 0;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:29px;
+}
+
+/* PARK CARDS */
+
+.park-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+}
+
+.park-card{
+  position:relative;
+  min-height:180px;
+  padding:19px;
+  background:linear-gradient(145deg,#0d192a,#101f34);
+  border:1px solid #20334b;
+  border-radius:18px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.park-card:hover{
+  transform:translateY(-4px);
+  border-color:#36ddff;
+}
+
+.park-icon{
+  font-size:35px;
+}
+
+.park-card h3{
+  margin:11px 0 5px;
+}
+
+.park-average{
+  position:absolute;
+  right:18px;
+  top:18px;
+  font-size:21px;
+  font-weight:900;
+}
+
+.badge{
+  display:inline-block;
+  margin-top:15px;
+  padding:6px 9px;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:900;
+}
+
+.badge-live{
+  background:#35e58b18;
+  color:#35e58b;
+}
+
+.badge-offline{
+  background:#ff637818;
+  color:#ff6378;
+}
+
+/* MAP */
+
+.map-wrapper{
+  background:#07111f;
+  border:1px solid #20334b;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.map-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:12px;
+  background:#0c1727;
+  border-bottom:1px solid #20334b;
+}
+
+.map-toolbar button,
+.map-toolbar select{
+  background:#14243a;
+  color:white;
+  border:1px solid #2b405c;
+  border-radius:9px;
+  padding:9px 13px;
+  font-weight:900;
+}
+
+.map-toolbar button:hover{
+  border-color:#36ddff;
+}
+
+#map{
+  width:100%;
+  height:700px;
+}
+
+/* PARK MAP ICON */
+
+.park-pin{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#2bdfff,#705cff);
+  border:3px solid white;
+  box-shadow:0 5px 20px #0009;
+  font-size:23px;
+}
+
+/* WAIT MAP ICON */
+
+.wait-pin{
+  min-width:44px;
+  height:44px;
+  padding:0 5px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:3px solid white;
+  box-shadow:0 4px 18px #0009;
+  font-size:11px;
+  font-weight:900;
+  color:#06101b;
+}
+
+.wait-short{
+  background:#35e58b;
+}
+
+.wait-medium{
+  background:#ffd166;
+}
+
+.wait-long{
+  background:#ff6378;
+  color:white;
+}
+
+.wait-closed{
+  background:#66788c;
+  color:white;
+}
+
+/* TABLE */
+
+.table{
+  overflow:hidden;
+  background:#0c1727;
+  border:1px solid #20334b;
+  border-radius:18px;
+}
+
+.table-header,
+.ride{
+  display:grid;
+  grid-template-columns:2.5fr 1fr 1fr 50px;
+  gap:12px;
+  align-items:center;
+}
+
+.table-header{
+  padding:14px 17px;
+  background:#122137;
+  color:#8196ad;
+  font-size:10px;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.ride{
+  padding:14px 17px;
+  border-top:1px solid #1a2a40;
+}
+
+.ride-name{
+  font-weight:900;
+}
+
+.ride-sub{
+  margin-top:4px;
+  color:#8195ac;
+  font-size:11px;
+}
+
+.wait{
+  font-size:21px;
+  font-weight:900;
+}
+
+.green{
+  color:#35e58b;
+}
+
+.yellow{
+  color:#ffd166;
+}
+
+.red{
+  color:#ff6378;
+}
+
+.gray{
+  color:#8191a4;
+}
+
+.star{
+  font-size:24px;
+  color:#556a82;
+}
+
+.star.active{
+  color:#ffd166;
+}
+
+.loading-box{
+  text-align:center;
+  padding:60px 20px;
+  color:#879bb2;
+}
+
+/* FOOTER */
+
+footer{
+  text-align:center;
+  padding:40px;
+  border-top:1px solid #17283e;
+  color:#8195aa;
+}
+
+/* MOBILE */
+
+@media(max-width:1100px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .park-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:650px){
+
+  .nav-buttons{
+    display:none;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .park-grid{
+    grid-template-columns:1fr;
+  }
+
+  .table-header{
+    display:none;
+  }
+
+  .ride{
+    grid-template-columns:1fr auto;
+  }
+
+  .hide-mobile{
+    display:none;
+  }
+
+  #map{
+    height:550px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="nav">
+
+<div class="logo">
+🎢 Orlando <span>WaitWatch</span>
+</div>
+
+<div class="nav-buttons">
+
+<button
+class="nav-button"
+onclick="scrollToSection('parksSection')">
+Parks
+</button>
+
+<button
+class="nav-button"
+onclick="scrollToSection('mapSection')">
+🗺️ Map
+</button>
+
+<button
+class="nav-button"
+onclick="scrollToSection('waitSection')">
+Wait Times
+</button>
+
+<button
+class="nav-button refresh"
+onclick="loadLiveData()">
+↻ Refresh
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<section class="hero">
+
+<h1>
+Know the line
+<span>before you ride.</span>
+</h1>
+
+<p>
+Live Orlando attraction wait times with a geographic
+map showing theme parks and mapped attraction wait times.
+</p>
+
+</section>
+
+
+<div class="status">
+
+<div class="status-left">
+
+<span
+id="statusDot"
+class="status-dot loading">
+</span>
+
+<b id="statusText">
+Connecting to live data...
+</b>
+
+</div>
+
+<span
+id="lastUpdated"
+class="small">
+Waiting for update...
+</span>
+
+</div>
+
+
+<div
+id="notice"
+class="notice">
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-label">
+Parks
+</div>
+
+<div
+id="statParks"
+class="stat-number">
+12
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+Attractions
+</div>
+
+<div
+id="statRides"
+class="stat-number">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+Operating
+</div>
+
+<div
+id="statOperating"
+class="stat-number">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+Average Wait
+</div>
+
+<div
+id="statAverage"
+class="stat-number">
+—
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+Live Parks
+</div>
+
+<div
+id="statLiveParks"
+class="stat-number">
+—
+</div>
+
+</div>
+
+</div>
+
+
+<div class="controls">
+
+<input
+id="searchInput"
+placeholder="🔎 Search attractions..."
+oninput="renderRides()"
+>
+
+<select
+id="parkFilter"
+onchange="filterChanged()">
+
+<option value="all">
+All Parks
+</option>
+
+</select>
+
+
+<select
+id="sortSelect"
+onchange="renderRides()">
+
+<option value="short">
+Shortest Wait
+</option>
+
+<option value="long">
+Longest Wait
+</option>
+
+<option value="name">
+A-Z
+</option>
+
+</select>
+
+
+<button onclick="showFavorites()">
+⭐ Favorites
+</button>
+
+
+<button onclick="loadLiveData()">
+Get Live Data
+</button>
+
+</div>
+
+
+<section
+id="parksSection"
+class="section">
+
+<div class="section-title">
+
+<h2>
+🎡 Orlando Parks
+</h2>
+
+<span
+id="parkResponse"
+class="small">
+Loading...
+</span>
+
+</div>
+
+<div
+id="parkGrid"
+class="park-grid">
+</div>
+
+</section>
+
+
+<section
+id="mapSection"
+class="section">
+
+<div class="section-title">
+
+<h2>
+🗺️ Live Wait-Time Map
+</h2>
+
+<span class="small">
+Real Orlando geography
+</span>
+
+</div>
+
+
+<div class="map-wrapper">
+
+
+<div class="map-toolbar">
+
+<button onclick="zoomToOrlando()">
+🎢 All Parks
+</button>
+
+<button onclick="locateMe()">
+📍 Find My Location
+</button>
+
+<button onclick="zoomToSelectedPark()">
+🏰 Selected Park
+</button>
+
+<select
+id="mapParkFilter"
+onchange="mapFilterChanged()">
+
+<option value="all">
+All Parks
+</option>
+
+</select>
+
+</div>
+
+
+<div id="map"></div>
+
+</div>
+
+</section>
+
+
+<section
+id="waitSection"
+class="section">
+
+<div class="section-title">
+
+<h2>
+⏱️ Live Wait Times
+</h2>
+
+<span
+id="rideCount"
+class="small">
+</span>
+
+</div>
+
+
+<div class="table">
+
+<div class="table-header">
+
+<div>
+Attraction
+</div>
+
+<div>
+Wait
+</div>
+
+<div>
+Status
+</div>
+
+<div>
+★
+</div>
+
+</div>
+
+
+<div id="rideList">
+
+<div class="loading-box">
+Connecting...
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+<footer>
+
+Orlando WaitWatch
+
+<br><br>
+
+<span class="small">
+Live attraction information is displayed only when
+received from the connected server.
+</span>
+
+</footer>
+
+
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+/* ============================================================
+   PARK DATABASE
+============================================================ */
+
+const PARKS = [
+
+{
+id:6,
+name:"Magic Kingdom",
+emoji:"🏰",
+lat:28.4177,
+lng:-81.5812
+},
+
+{
+id:5,
+name:"EPCOT",
+emoji:"🌐",
+lat:28.3747,
+lng:-81.5494
+},
+
+{
+id:7,
+name:"Hollywood Studios",
+emoji:"🎬",
+lat:28.3575,
+lng:-81.5580
+},
+
+{
+id:8,
+name:"Animal Kingdom",
+emoji:"🦁",
+lat:28.3553,
+lng:-81.5900
+},
+
+{
+id:64,
+name:"Islands of Adventure",
+emoji:"🦖",
+lat:28.4722,
+lng:-81.4712
+},
+
+{
+id:65,
+name:"Universal Studios Florida",
+emoji:"🎬",
+lat:28.4740,
+lng:-81.4678
+},
+
+{
+id:66,
+name:"Volcano Bay",
+emoji:"🌋",
+lat:28.4627,
+lng:-81.4720
+},
+
+{
+id:67,
+name:"Epic Universe",
+emoji:"🌌",
+lat:28.4728,
+lng:-81.4454
+},
+
+{
+id:21,
+name:"SeaWorld Orlando",
+emoji:"🐬",
+lat:28.4118,
+lng:-81.4612
+},
+
+{
+id:23,
+name:"Aquatica Orlando",
+emoji:"💦",
+lat:28.4107,
+lng:-81.4578
+},
+
+{
+id:28,
+name:"LEGOLAND Florida",
+emoji:"🧱",
+lat:27.9890,
+lng:-81.6900
+},
+
+{
+id:316,
+name:"Peppa Pig Theme Park",
+emoji:"🐷",
+lat:27.9940,
+lng:-81.6810
+}
+
+];
+
+
+/* ============================================================
+   ATTRACTION COORDINATES
+   ============================================================
+
+   These are deliberately stored by PARK ID + attraction name.
+
+   IMPORTANT:
+   If an attraction isn't in this database, it will NOT be
+   randomly placed on the map.
+
+============================================================ */
+
+const RIDE_COORDS = {
+
+
+/* MAGIC KINGDOM */
+
+"6|Jungle Cruise":
+[28.4177,-81.5845],
+
+"6|Pirates of the Caribbean":
+[28.4170,-81.5872],
+
+"6|Swiss Family Treehouse":
+[28.4181,-81.5860],
+
+"6|Space Mountain":
+[28.4190,-81.5789],
+
+"6|TRON Lightcycle / Run":
+[28.4182,-81.5799],
+
+"6|Seven Dwarfs Mine Train":
+[28.4202,-81.5817],
+
+"6|Big Thunder Mountain Railroad":
+[28.4194,-81.5860],
+
+"6|Haunted Mansion":
+[28.4213,-81.5845],
+
+"6|it's a small world":
+[28.4209,-81.5828],
+
+"The Many Adventures of Winnie the Pooh":
+[28.4212,-81.5808],
+
+
+/* EPCOT */
+
+"5|Guardians of the Galaxy: Cosmic Rewind":
+[28.3746,-81.5498],
+
+"5|Test Track":
+[28.3728,-81.5425],
+
+"5|Mission: SPACE":
+[28.3751,-81.5472],
+
+"5|Soarin' Around the World":
+[28.3741,-81.5580],
+
+"5|Remy's Ratatouille Adventure":
+[28.3695,-81.5501],
+
+"5|Frozen Ever After":
+[28.3682,-81.5509],
+
+
+/* HOLLYWOOD STUDIOS */
+
+"7|Star Wars: Rise of the Resistance":
+[28.3580,-81.5595],
+
+"7|Mickey & Minnie's Runaway Railway":
+[28.3578,-81.5590],
+
+"7|The Twilight Zone Tower of Terror":
+[28.3591,-81.5587],
+
+"7|Tower of Terror":
+[28.3591,-81.5587],
+
+"7|Rock 'n' Roller Coaster":
+[28.3587,-81.5600],
+
+"7|Slinky Dog Dash":
+[28.3560,-81.5598],
+
+"7|Millennium Falcon: Smugglers Run":
+[28.3570,-81.5600],
+
+
+/* ANIMAL KINGDOM */
+
+"8|Avatar Flight of Passage":
+[28.3555,-81.5915],
+
+"8|Na'vi River Journey":
+[28.3558,-81.5919],
+
+"8|Expedition Everest":
+[28.3578,-81.5868],
+
+"8|Kilimanjaro Safaris":
+[28.3554,-81.5940],
+
+"8|DINOSAUR":
+[28.3559,-81.5880],
+
+
+/* UNIVERSAL STUDIOS FLORIDA */
+
+"65|Harry Potter and the Escape from Gringotts":
+[28.4746,-81.4690],
+
+"65|Revenge of the Mummy":
+[28.4752,-81.4702],
+
+"65|Hollywood Rip Ride Rockit":
+[28.4754,-81.4675],
+
+"65|Transformers: The Ride-3D":
+[28.4740,-81.4670],
+
+"65|MEN IN BLACK Alien Attack":
+[28.4732,-81.4658],
+
+"65|The Simpsons Ride":
+[28.4751,-81.4648],
+
+"65|Despicable Me Minion Mayhem":
+[28.4761,-81.4682],
+
+
+/* ISLANDS OF ADVENTURE */
+
+"64|Hagrid's Magical Creatures Motorbike Adventure":
+[28.4710,-81.4700],
+
+"64|Harry Potter and the Forbidden Journey":
+[28.4728,-81.4725],
+
+"64|The Incredible Hulk Coaster":
+[28.4721,-81.4680],
+
+"64|The Amazing Adventures of Spider-Man":
+[28.4730,-81.4672],
+
+"64|Jurassic World VelociCoaster":
+[28.4742,-81.4730],
+
+"64|Skull Island: Reign of Kong":
+[28.4720,-81.4750],
+
+"64|Popeye & Bluto's Bilge-Rat Barges":
+[28.4728,-81.4762],
+
+
+/* EPIC UNIVERSE */
+
+"67|Stardust Racers":
+[28.4725,-81.4455],
+
+"67|Mine-Cart Madness":
+[28.4740,-81.4450],
+
+"67|Mario Kart: Bowser's Challenge":
+[28.4717,-81.4428],
+
+"67|Harry Potter and the Battle at the Ministry":
+[28.4728,-81.4485],
+
+"67|Monsters Unchained: The Frankenstein Experiment":
+[28.4745,-81.4475],
+
+"67|Dragon Racer's Rally":
+[28.4760,-81.4445],
+
+
+/* VOLCANO BAY */
+
+"66|Krakatau Aqua Coaster":
+[28.4635,-81.4718],
+
+"66|Ko'okiri Body Plunge":
+[28.4645,-81.4720],
+
+"66|Kala and Tai Nui Serpentine Body Slides":
+[28.4640,-81.4708],
+
+
+/* SEAWORLD */
+
+"21|Mako":
+[28.4125,-81.4600],
+
+"21|Kraken":
+[28.4120,-81.4630],
+
+"21|Pipeline: The Surf Coaster":
+[28.4130,-81.4618],
+
+"21|Ice Breaker":
+[28.4140,-81.4605],
+
+"21|Penguin Trek":
+[28.4108,-81.4635],
+
+
+/* AQUATICA */
+
+"23|Riptide Race":
+[28.4100,-81.4570],
+
+"23|Ihu's Breakaway Falls":
+[28.4120,-81.4575],
+
+"23|KareKare Curl":
+[28.4095,-81.4565],
+
+
+/* LEGOLAND */
+
+"28|The Dragon":
+[27.9897,-81.6890],
+
+"28|The Great LEGO Race":
+[27.9905,-81.6900],
+
+"28|Unikitty's Disco Drop":
+[27.9880,-81.6895],
+
+"28|Coastersaurus":
+[27.9888,-81.6910],
+
+
+/* PEPPA PIG */
+
+"316|Grandad Dog's Garage":
+[27.9940,-81.6810],
+
+"316|Daddy Pig's Roller Coaster":
+[27.9935,-81.6802],
+
+"316|Peppa's Big Balloon Ride":
+[27.9950,-81.6805]
+
+};
+
+
+/* ============================================================
+   STATE
+============================================================ */
+
+let parkData=[];
+
+let allRides=[];
+
+let favorites=
+JSON.parse(
+localStorage.getItem(
+"orlandoWaitWatchFavorites"
+)||"[]"
+);
+
+let map;
+
+let parkMarkers=[];
+
+let rideMarkers=[];
+
+let userMarker=null;
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function $(id){
+
+return document.getElementById(id);
+
+}
+
+
+function escapeHTML(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function normalizeName(name){
+
+return String(name||"")
+.toLowerCase()
+.replace(/[™®©]/g,"")
+.replace(/[’‘]/g,"'")
+.replace(/[–—]/g,"-")
+.replace(/\s+/g," ")
+.trim();
+
+}
+
+
+/* ============================================================
+   FIND ATTRACTION COORDINATES
+============================================================ */
+
+function getRideLocation(ride,park){
+
+const exactKey=
+String(park.id)+"|"+String(ride.name||"");
+
+
+if(RIDE_COORDS[exactKey]){
+
+return RIDE_COORDS[exactKey];
+
+}
+
+
+const target=
+normalizeName(ride.name);
+
+
+for(const key in RIDE_COORDS){
+
+const split=key.indexOf("|");
+
+if(split===-1)
+continue;
+
+const parkId=key.substring(0,split);
+
+const rideName=key.substring(split+1);
+
+if(
+parkId===String(park.id) &&
+normalizeName(rideName)===target
+){
+
+return RIDE_COORDS[key];
+
+}
+
+}
+
+
+/*
+ Try partial matching.
+
+ This helps if Queue-Times adds a trademark symbol
+ or slightly changes the name.
+*/
+
+for(const key in RIDE_COORDS){
+
+const split=key.indexOf("|");
+
+if(split===-1)
+continue;
+
+const parkId=key.substring(0,split);
+
+const rideName=key.substring(split+1);
+
+const stored=
+normalizeName(rideName);
+
+
+if(
+parkId===String(park.id) &&
+(
+target.includes(stored) ||
+stored.includes(target)
+)
+){
+
+return RIDE_COORDS[key];
+
+}
+
+}
+
+
+/*
+ IMPORTANT:
+ Return null instead of making up a location.
+*/
+
+return null;
+
+}
+
+
+/* ============================================================
+   INITIALIZE MAP
+============================================================ */
+
+function initializeMap(){
+
+map=
+L.map("map",{
+zoomControl:true
+});
+
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+maxZoom:19,
+attribution:"© OpenStreetMap contributors"
+}
+).addTo(map);
+
+
+map.setView(
+[28.40,-81.50],
+10
+);
+
+}
+
+
+/* ============================================================
+   PARK FILTERS
+============================================================ */
+
+function buildFilters(){
+
+PARKS.forEach(function(park){
+
+const option=
+document.createElement("option");
+
+option.value=park.id;
+
+option.textContent=park.name;
+
+$("parkFilter")
+.appendChild(option);
+
+
+const option2=
+document.createElement("option");
+
+option2.value=park.id;
+
+option2.textContent=park.name;
+
+$("mapParkFilter")
+.appendChild(option2);
+
+});
+
+}
+
+
+/* ============================================================
+   LOAD LIVE DATA
+============================================================ */
+
+async function loadLiveData(){
+
+$("statusText").textContent=
+"Connecting to live data...";
+
+$("statusDot").className=
+"status-dot loading";
+
+
+try{
+
+const response=
+await fetch(
+"/api/parks",
+{
+cache:"no-store"
+}
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"HTTP "+response.status
+);
+
+}
+
+
+const result=
+await response.json();
+
+
+if(
+!result ||
+!Array.isArray(result.parks)
+){
+
+throw new Error(
+"Unexpected API response"
+);
+
+}
+
+
+parkData=result.parks;
+
+allRides=[];
+
+
+parkData.forEach(function(park){
+
+if(!Array.isArray(park.rides))
+return;
+
+
+park.rides.forEach(function(ride){
+
+allRides.push({
+
+...ride,
+
+parkId:park.id,
+
+parkName:park.name,
+
+parkEmoji:park.emoji
+
+});
+
+});
+
+});
+
+
+$("statusText").textContent=
+"LIVE DATA CONNECTED";
+
+$("statusDot").className=
+"status-dot live";
+
+
+$("lastUpdated").textContent=
+"Updated "+
+new Date().toLocaleTimeString();
+
+
+$("notice").style.display="none";
+
+
+renderStats();
+
+renderParks();
+
+renderRides();
+
+renderMap();
+
+}
+
+catch(error){
+
+console.error(error);
+
+
+$("statusText").textContent=
+"LIVE DATA UNAVAILABLE";
+
+$("statusDot").className=
+"status-dot";
+
+
+$("notice").style.display=
+"block";
+
+
+$("notice").innerHTML=
+
+"<b>Could not connect to live data.</b>"+
+"<br><br>"+
+"Error: <code>"+
+escapeHTML(error.message)+
+"</code>"+
+"<br><br>"+
+"Make sure your Node server is running and "+
+"you opened the website at "+
+"<b>http://localhost:3000</b>.";
+
+
+renderEmptyParks();
+
+renderMap();
+
+}
+
+}
+
+
+/* ============================================================
+   STATS
+============================================================ */
+
+function renderStats(){
+
+const operating=
+allRides.filter(
+ride=>ride.is_open
+);
+
+
+let average=null;
+
+
+if(operating.length){
+
+average=
+Math.round(
+
+operating.reduce(
+(sum,ride)=>
+sum+
+Number(
+ride.wait_time||0
+),
+0
+)
+/
+operating.length
+
+);
+
+}
+
+
+$("statParks").textContent=
+PARKS.length;
+
+$("statRides").textContent=
+allRides.length;
+
+$("statOperating").textContent=
+operating.length;
+
+$("statAverage").textContent=
+average===null
+?"—"
+:average+"m";
+
+$("statLiveParks").textContent=
+parkData.filter(
+park=>park.success
+).length;
+
+}
+
+
+/* ============================================================
+   PARK CARDS
+============================================================ */
+
+function renderEmptyParks(){
+
+$("parkGrid").innerHTML=
+
+PARKS.map(function(park){
+
+return `
+
+<div
+class="park-card"
+onclick="choosePark(${park.id})">
+
+<div class="park-icon">
+${park.emoji}
+</div>
+
+<h3>
+${escapeHTML(park.name)}
+</h3>
+
+<div class="small">
+No live data
+</div>
+
+<div class="park-average">
+—
+</div>
+
+<div class="badge badge-offline">
+● NO LIVE DATA
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+function renderParks(){
+
+$("parkGrid").innerHTML="";
+
+
+PARKS.forEach(function(park){
+
+const data=
+parkData.find(
+item=>
+Number(item.id)===
+Number(park.id)
+);
+
+
+const rides=
+data &&
+Array.isArray(data.rides)
+?data.rides
+:[];
+
+
+const open=
+rides.filter(
+ride=>ride.is_open
+);
+
+
+let average=null;
+
+
+if(open.length){
+
+average=
+Math.round(
+
+open.reduce(
+(sum,ride)=>
+sum+
+Number(
+ride.wait_time||0
+),
+0
+)
+/
+open.length
+
+);
+
+}
+
+
+const card=
+document.createElement("div");
+
+
+card.className=
+"park-card";
+
+
+card.onclick=function(){
+
+choosePark(park.id);
+
+};
+
+
+card.innerHTML=`
+
+<div class="park-icon">
+${park.emoji}
+</div>
+
+<h3>
+${escapeHTML(park.name)}
+</h3>
+
+<div class="small">
+
+${
+data&&data.success
+?rides.length+
+" attractions received"
+:"No live data"
+}
+
+</div>
+
+<div class="park-average">
+
+${
+average===null
+?"—"
+:average+"m"
+}
+
+</div>
+
+<div class="badge ${
+data&&data.success
+?"badge-live"
+:"badge-offline"
+}">
+
+${
+data&&data.success
+?"● LIVE"
+:"● NO LIVE DATA"
+}
+
+</div>
+
+`;
+
+
+$("parkGrid")
+.appendChild(card);
+
+});
+
+
+$("parkResponse").textContent=
+
+parkData.filter(
+park=>park.success
+).length+
+
+" of "+
+
+PARKS.length+
+
+" parks responding";
+
+}
+
+
+/* ============================================================
+   MAP ICONS
+============================================================ */
+
+function createParkIcon(emoji){
+
+return L.divIcon({
+
+className:"",
+
+html:
+'<div class="park-pin">'+
+emoji+
+'</div>',
+
+iconSize:[48,48],
+
+iconAnchor:[24,24],
+
+popupAnchor:[0,-25]
+
+});
+
+}
+
+
+function createWaitIcon(
+wait,
+open
+){
+
+if(!open){
+
+return L.divIcon({
+
+className:"",
+
+html:
+'<div class="wait-pin wait-closed">×</div>',
+
+iconSize:[44,44],
+
+iconAnchor:[22,22]
+
+});
+
+}
+
+
+wait=
+Number(wait||0);
+
+
+let cls="wait-short";
+
+
+if(wait>=60){
+
+cls="wait-long";
+
+}
+
+else if(wait>=30){
+
+cls="wait-medium";
+
+}
+
+
+return L.divIcon({
+
+className:"",
+
+html:
+'<div class="wait-pin '+
+cls+
+'">'+
+wait+
+'</div>',
+
+iconSize:[44,44],
+
+iconAnchor:[22,22]
+
+});
+
+}
+
+
+/* ============================================================
+   RENDER MAP
+============================================================ */
+
+function renderMap(){
+
+if(!map)
+return;
+
+
+/* Remove old markers */
+
+parkMarkers.forEach(
+marker=>
+map.removeLayer(marker)
+);
+
+rideMarkers.forEach(
+marker=>
+map.removeLayer(marker)
+);
+
+
+parkMarkers=[];
+
+rideMarkers=[];
+
+
+const selected=
+$("mapParkFilter").value;
+
+
+/* PARK MARKERS */
+
+PARKS.forEach(function(park){
+
+if(
+selected!=="all" &&
+String(park.id)!==
+String(selected)
+){
+
+return;
+
+}
+
+
+const marker=
+L.marker(
+[
+park.lat,
+park.lng
+],
+{
+icon:
+createParkIcon(
+park.emoji
+)
+}
+)
+.addTo(map);
+
+
+const parkInfo=
+parkData.find(
+p=>
+Number(p.id)===
+Number(park.id)
+);
+
+
+const rideCount=
+parkInfo &&
+Array.isArray(parkInfo.rides)
+?parkInfo.rides.length
+:0;
+
+
+marker.bindPopup(`
+
+<div class="popup-title">
+${escapeHTML(park.name)}
+</div>
+
+<div class="popup-park">
+📍 Actual park location
+</div>
+
+<div>
+${rideCount}
+attractions received
+from the live server.
+</div>
+
+`);
+
+
+parkMarkers.push(marker);
+
+});
+
+
+/* RIDE MARKERS */
+
+allRides.forEach(function(ride){
+
+if(
+selected!=="all" &&
+String(ride.parkId)!==
+String(selected)
+){
+
+return;
+
+}
+
+
+const park=
+PARKS.find(
+p=>
+String(p.id)===
+String(ride.parkId)
+);
+
+
+if(!park)
+return;
+
+
+/*
+ Get the actual mapped location.
+*/
+
+const location=
+getRideLocation(
+ride,
+park
+);
+
+
+/*
+ If this attraction doesn't have a known coordinate,
+ DO NOT PUT IT SOMEWHERE RANDOM.
+*/
+
+if(!location)
+return;
+
+
+const marker=
+L.marker(
+location,
+{
+icon:
+createWaitIcon(
+ride.wait_time,
+ride.is_open
+)
+}
+)
+.addTo(map);
+
+
+let waitHTML;
+
+
+if(!ride.is_open){
+
+waitHTML=
+
+'<div class="popup-wait popup-gray">'+
+'Closed'+
+'</div>';
+
+}
+
+else{
+
+const wait=
+Number(
+ride.wait_time||0
+);
+
+
+let cls="popup-green";
+
+
+if(wait>=60){
+
+cls="popup-red";
+
+}
+
+else if(wait>=30){
+
+cls="popup-yellow";
+
+}
+
+
+waitHTML=
+
+'<div class="popup-wait '+
+cls+
+'">'+
+wait+
+' min'+
+'</div>';
+
+}
+
+
+marker.bindPopup(`
+
+<div class="popup-title">
+${escapeHTML(ride.name)}
+</div>
+
+<div class="popup-park">
+${escapeHTML(ride.parkName)}
+</div>
+
+${waitHTML}
+
+<div
+style="
+margin-top:7px;
+font-size:12px;
+color:#8fa3ba;
+">
+
+${
+ride.is_open
+?"🟢 Operating"
+:"⚪ Closed"
+}
+
+</div>
+
+`);
+
+
+rideMarkers.push(marker);
+
+});
+
+}
+
+
+/* ============================================================
+   FILTERS
+============================================================ */
+
+function filterChanged(){
+
+const value=
+$("parkFilter").value;
+
+
+$("mapParkFilter").value=
+value;
+
+
+renderRides();
+
+renderMap();
+
+
+if(value!=="all"){
+
+zoomToPark(
+Number(value)
+);
+
+}
+
+}
+
+
+function mapFilterChanged(){
+
+const value=
+$("mapParkFilter").value;
+
+
+$("parkFilter").value=
+value;
+
+
+renderRides();
+
+renderMap();
+
+
+if(value!=="all"){
+
+zoomToPark(
+Number(value)
+);
+
+}
+
+}
+
+
+/* ============================================================
+   MAP ZOOM
+============================================================ */
+
+function zoomToPark(id){
+
+const park=
+PARKS.find(
+p=>
+Number(p.id)===
+Number(id)
+);
+
+
+if(!park)
+return;
+
+
+map.flyTo(
+[
+park.lat,
+park.lng
+],
+15,
+{
+duration:1.2
+}
+);
+
+}
+
+
+function zoomToSelectedPark(){
+
+const value=
+$("mapParkFilter").value;
+
+
+if(value==="all"){
+
+zoomToOrlando();
+
+return;
+
+}
+
+
+zoomToPark(
+Number(value)
+);
+
+}
+
+
+function zoomToOrlando(){
+
+map.flyTo(
+[
+28.40,
+-81.50
+],
+10,
+{
+duration:1
+}
+);
+
+}
+
+
+function choosePark(id){
+
+$("parkFilter").value=
+String(id);
+
+$("mapParkFilter").value=
+String(id);
+
+renderRides();
+
+renderMap();
+
+zoomToPark(id);
+
+scrollToSection(
+"mapSection"
+);
+
+}
+
+
+/* ============================================================
+   LOCATION
+============================================================ */
+
+function locateMe(){
+
+if(!navigator.geolocation){
+
+alert(
+"Your browser does not support location services."
+);
+
+return;
+
+}
+
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+const lat=
+position.coords.latitude;
+
+const lng=
+position.coords.longitude;
+
+
+map.flyTo(
+[
+lat,
+lng
+],
+14,
+{
+duration:1.5
+}
+);
+
+
+if(userMarker){
+
+map.removeLayer(
+userMarker
+);
+
+}
+
+
+userMarker=
+L.circleMarker(
+[
+lat,
+lng
+],
+{
+radius:9,
+weight:3,
+fillOpacity:.9
+}
+)
+.addTo(map);
+
+
+userMarker.bindPopup(
+"<b>📍 You are here</b>"
+);
+
+
+userMarker.openPopup();
+
+},
+
+function(){
+
+alert(
+"Couldn't access your location. "+
+"Allow location access in your browser "+
+"and try again."
+);
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:10000,
+maximumAge:60000
+}
+
+);
+
+}
+
+
+/* ============================================================
+   RIDES
+============================================================ */
+
+function renderRides(){
+
+const search=
+$("searchInput")
+.value
+.toLowerCase()
+.trim();
+
+
+const filter=
+$("parkFilter").value;
+
+
+const sort=
+$("sortSelect").value;
+
+
+let rides=
+allRides.filter(function(ride){
+
+const parkMatch=
+filter==="all" ||
+String(ride.parkId)===
+String(filter);
+
+
+const searchMatch=
+!search ||
+String(ride.name)
+.toLowerCase()
+.includes(search);
+
+
+return parkMatch &&
+searchMatch;
+
+});
+
+
+if(sort==="short"){
+
+rides.sort(
+(a,b)=>
+Number(a.wait_time||0)-
+Number(b.wait_time||0)
+);
+
+}
+
+
+if(sort==="long"){
+
+rides.sort(
+(a,b)=>
+Number(b.wait_time||0)-
+Number(a.wait_time||0)
+);
+
+}
+
+
+if(sort==="name"){
+
+rides.sort(
+(a,b)=>
+String(a.name)
+.localeCompare(
+String(b.name)
+)
+);
+
+}
+
+
+$("rideCount").textContent=
+rides.length+
+" attractions";
+
+
+if(!rides.length){
+
+$("rideList").innerHTML=
+
+'<div class="loading-box">'+
+
+"<h3>No attractions found</h3>"+
+
+"<p>Try another park or search.</p>"+
+
+"</div>";
+
+return;
+
+}
+
+
+$("rideList").innerHTML=
+
+rides
+.map(
+ride=>
+createRideHTML(
+ride
+)
+)
+.join("");
+
+}
+
+
+/* ============================================================
+   RIDE ROW
+============================================================ */
+
+function createRideHTML(ride){
+
+const key=
+String(ride.parkId)+
+":"+
+String(ride.id);
+
+
+const favorite=
+favorites.includes(key);
+
+
+const wait=
+Number(
+ride.wait_time||0
+);
+
+
+let cls="green";
+
+
+if(!ride.is_open){
+
+cls="gray";
+
+}
+
+else if(wait>=60){
+
+cls="red";
+
+}
+
+else if(wait>=30){
+
+cls="yellow";
+
+}
+
+
+return `
+
+<div class="ride">
+
+<div>
+
+<div class="ride-name">
+${escapeHTML(ride.name)}
+</div>
+
+<div class="ride-sub">
+
+${escapeHTML(ride.parkName)}
+
+•
+
+${escapeHTML(
+ride.land||
+"Attraction"
+)}
+
+</div>
+
+</div>
+
+
+<div class="wait ${cls}">
+
+${
+ride.is_open
+?wait+" min"
+:"Closed"
+}
+
+</div>
+
+
+<div class="hide-mobile">
+
+${
+ride.is_open
+?"🟢 Operating"
+:"⚪ Closed"
+}
+
+</div>
+
+
+<div
+class="star ${
+favorite
+?"active"
+:""
+}"
+onclick="
+toggleFavorite('${key}')
+">
+
+★
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* ============================================================
+   FAVORITES
+============================================================ */
+
+function toggleFavorite(key){
+
+if(
+favorites.includes(key)
+){
+
+favorites=
+favorites.filter(
+x=>x!==key
+);
+
+}
+
+else{
+
+favorites.push(key);
+
+}
+
+
+localStorage.setItem(
+"orlandoWaitWatchFavorites",
+JSON.stringify(
+favorites
+)
+);
+
+
+renderRides();
+
+}
+
+
+function showFavorites(){
+
+const rides=
+allRides.filter(
+ride=>
+favorites.includes(
+String(ride.parkId)+
+":"+
+String(ride.id)
+)
+);
+
+
+$("rideCount").textContent=
+rides.length+
+" favorites";
+
+
+if(!rides.length){
+
+$("rideList").innerHTML=
+
+'<div class="loading-box">'+
+
+"<h3>⭐ No favorites yet</h3>"+
+
+"<p>Click a star beside an attraction.</p>"+
+
+"</div>";
+
+return;
+
+}
+
+
+$("rideList").innerHTML=
+
+rides
+.map(
+ride=>
+createRideHTML(
+ride
+)
+)
+.join("");
+
+}
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function scrollToSection(id){
+
+$(id).scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+/* ============================================================
+   START APP
+============================================================ */
+
+buildFilters();
+
+initializeMap();
+
+renderEmptyParks();
+
+loadLiveData();
+
+
+/*
+ Automatically refresh every 5 minutes.
+*/
+
+setInterval(
+loadLiveData,
+5*60*1000
+);
+
+</script>
+
+</body>
+</html>
+```
