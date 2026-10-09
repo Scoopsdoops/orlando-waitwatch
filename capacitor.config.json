@@ -1,0 +1,15 @@
+{
+  "appId": "com.orlandowaitwatch.app",
+  "appName": "Orlando WaitWatch",
+  "webDir": "www",
+  "server": {
+    "url": "https://orlando-waitwatch-k5hf.onrender.com",
+    "cleartext": false,
+    "allowNavigation": [
+      "orlando-waitwatch-k5hf.onrender.com"
+    ]
+  },
+  "ios": {
+    "contentInset": "automatic"
+  }
+}
