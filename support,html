@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support | Orlando WaitWatch</title>
+  <meta name="description" content="Get help with Orlando WaitWatch.">
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #050b14;
+      color: #f5f7fb;
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+    }
+    main {
+      max-width: 760px;
+      margin: 40px auto;
+    }
+    h1, h2 { color: #36ddff; }
+    a { color: #36ddff; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Orlando WaitWatch Support</h1>
+    <p>Need help with Orlando WaitWatch? This page will help
+    you find assistance with the app.</p>
+
+    <h2>Wait times</h2>
+    <p>Wait times may change quickly and may occasionally be
+    delayed or unavailable. Always follow official park
+    information and posted instructions.</p>
+
+    <h2>Map and favorites</h2>
+    <p>If the map doesn't load, check your internet connection
+    and try refreshing the app. If favorites aren't appearing,
+    check whether your browser or device is preserving local
+    app data.</p>
+
+    <h2>Questions or problems</h2>
+    <p>For support, contact: [ADD A MONITORED SUPPORT EMAIL
+    BEFORE PUBLISHING]</p>
+
+    <h2>Privacy</h2>
+    <p>For information about data handling, see our
+    <a href="privacy.html">Privacy Policy</a>.</p>
+  </main>
+</body>
+</html>
